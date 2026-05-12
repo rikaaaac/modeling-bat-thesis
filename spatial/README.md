@@ -1,18 +1,18 @@
 # Table of contents
 
-1. [bin2cell_AB01.ipynb / bin2cell_AB02.ipynb](#1-bin2cell_ab01ipynb--bin2cell_ab02ipynb) — Visium HD bin-to-cell segmentation
-2. [filter_blood_cells.ipynb](#2-filter_blood_cellsipynb) — cropped out blood cells spatially from visium HD outputs
-3. [combined_samples.ipynb](#3-combined_samplesipynb) — Concatenate both samples (AB01, AB02), QC, normalization, batch correction, and clustering
-4. [reclustering.ipynb](#4-reclusteringipynb) — cell type annotation, SEC cell identification, and subset reclustering
-5. [tissues_one_canvas.ipynb](#5-tissues_one_canvasipynb) — multi-tissue coordinate stitching onto a shared canvas
-6. [plot_with_grid.py](#6-plot_with_gridpy) — coordinate grid plotting utilities for spatial region identification - this is just a utils script
-7. [trajectory_analysis_original.ipynb](#7-trajectory_analysis_originalipynb) — exploratory pdgfra/tdtomato trajectory preprocessing - this is not final, just drafting
-8. [pdgfra_analysis.ipynb](#8-pdgfra_analysisipynb) — Trajectory analysis for pdgfra+ cells
-9. [tdtomato_analysis.ipynb](#9-tdtomato_analysisipynb) — Trajectory analysis for tdTomato+ cell
-10. [trajectory.py](#11-trajectorypy) — HPC full trajectory pipeline (pdgfra+ and tdtomato+) - this is just exploratory script when I was playing with Cellrank
-11. [trajectory_pdgfra_only.py](#12-trajectory_pdgfra_onlypy) — HPC trajectory pipeline (pdgfra+ only) - just exploratory script
-12. [resume_lineage_drivers.py](#13-resume_lineage_driverspy) — resume lineage driver computation from checkpoint - just exploratory script
-13. [run_trajectory.sh](#14-run_trajectorysh) — SLURM job submission script - this is because I used to run these bigger scripts on Columbia's HPC
+1. [bin2cell_AB01.ipynb / bin2cell_AB02.ipynb](#bin2cell_ab01.ipynb-bin2cell_ab02.ipynb) — Visium HD bin-to-cell segmentation
+2. [filter_blood_cells.ipynb](#filter_blood_cells.ipynb) — cropped out blood cells spatially from visium HD outputs
+3. [combined_samples.ipynb](#combined_samples.ipynb) — Concatenate both samples (AB01, AB02), QC, normalization, batch correction, and clustering
+4. [reclustering.ipynb](#reclustering.ipynb) — cell type annotation, SEC cell identification, and subset reclustering
+5. [tissues_one_canvas.ipynb](#tissues_one_canvas.ipynb) — multi-tissue coordinate stitching onto a shared canvas
+6. [plot_with_grid.py](#plot_with_grid.py) — coordinate grid plotting utilities for spatial region identification - this is just a utils script
+7. [trajectory_analysis_original.ipynb](#trajectory_analysis_original.ipynb) — exploratory pdgfra/tdtomato trajectory preprocessing - this is not final, just drafting
+8. [pdgfra_analysis.ipynb](#pdgfra_analysis.ipynb) — Trajectory analysis for pdgfra+ cells
+9. [tdtomato_analysis.ipynb](#tdtomato_analysis.ipynb) — Trajectory analysis for tdTomato+ cell
+10. [trajectory.py](#trajectory.py) — HPC full trajectory pipeline (pdgfra+ and tdtomato+) - this is just exploratory script when I was playing with Cellrank
+11. [trajectory_pdgfra_only.py](#trajectory_pdgfra_only.py) — HPC trajectory pipeline (pdgfra+ only) - just exploratory script
+12. [resume_lineage_drivers.py](#resume_lineage_drivers.py) — resume lineage driver computation from checkpoint - just exploratory script
+13. [run_trajectory.sh](#run_trajectory.sh) — SLURM job submission script - this is because I used to run these bigger scripts on Columbia's HPC
 
 ---
 

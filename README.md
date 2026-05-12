@@ -8,20 +8,13 @@
     - codes
     - all h5ad files
     - results
-      - regular (master + pdgfra subsets)
-        - all plots, al degs
-      - trajectory
-        - scvelo
-        - cellrank
-        - combined modalities
+      - regular (master + pdgfra subsets): all plots, all degs
+      - trajectory: scvelo, cellrank, combined modalities
   - spatial
     - README.md
     - codes
     - all h5ad files
-    - results
-      - sec_cells
-      - pdgfra
-      - tdtomato
+    - results: sec_cells, pdgfra, tdtomato
 
 ### How to navigate the folders
 

@@ -1,14 +1,14 @@
 # Table of contents
 
-1. [combining_h5.py](#1-combining_h5py) — loading and concatenating 10x h5 files per sample
-2. [scanpy_pipeline.py](#2-scanpy_pipelinepy) — QC and preprocessing of concatenated scRNA-seq data
-3. [velocyto_integration.py](#3-velocyto_integrationpy) — integrating velocyto loom files into h5ad for RNA velocity
-4. [subsetting_method.ipynb](#4-subsetting_methodipynb) — subsetting cells by co-expression of marker genes
-5. [scvelo_analysis.ipynb](#5-scvelo_analysisipynb) — RNA velocity analysis using scVelo dynamical model
-6. [rna_velo_analysis.ipynb](#6-rna_velo_analysisipynb) — extended scVelo analysis with latent time and phase portraits
-7. [tangram_test_visium.ipynb](#7-tangram_test_visiumipynb) — Tangram cell mapping to Visium spatial transcriptomics
-8. [tangram_test_cosmx.ipynb](#8-tangram_test_cosmxipynb) — Tangram cell mapping to CosMx spatial transcriptomics
-9. [combined_modalities_analysis.ipynb](#9-combined_modalities_analysisipynb) — CellRank fate analysis combining RNA velocity and real-time kernels
+1. [combining_h5.py](#combining_h5.py) — loading and concatenating 10x h5 files per sample
+2. [scanpy_pipeline.py](#scanpy_pipeline.py) — QC and preprocessing of concatenated scRNA-seq data
+3. [velocyto_integration.py](#velocyto_integration.py) — integrating velocyto loom files into h5ad for RNA velocity
+4. [subsetting_method.ipynb](#subsetting_method.ipynb) — subsetting cells by co-expression of marker genes
+5. [scvelo_analysis.ipynb](#scvelo_analysis.ipynb) — RNA velocity analysis using scVelo dynamical model
+6. [rna_velo_analysis.ipynb](#rna_velo_analysis.ipynb) — extended scVelo analysis with latent time and phase portraits
+7. [tangram_test_visium.ipynb](#tangram_test_visium.ipynb) — Tangram cell mapping to Visium spatial transcriptomics
+8. [tangram_test_cosmx.ipynb](#tangram_test_cosmx.ipynb) — Tangram cell mapping to CosMx spatial transcriptomics
+9. [combined_modalities_analysis.ipynb](#combined_modalities_analysis.ipynb) — CellRank fate analysis combining RNA velocity and real-time kernels
 
 ---
 
