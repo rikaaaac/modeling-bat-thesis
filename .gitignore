@@ -7,9 +7,6 @@
 # deliverables (large office/pdf files)
 deliverables/
 
-# notebook outputs (large embedded data)
-*.ipynb
-
 # data result directories
 scrna_seq/h5ad_files/
 scrna_seq/results/
