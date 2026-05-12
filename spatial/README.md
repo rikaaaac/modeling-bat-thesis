@@ -1,40 +1,150 @@
 # Table of contents
 
-1. [bin2cell_AB01.ipynb / bin2cell_AB02.ipynb](#1-bin2cell_ab01ipynb--bin2cell_ab02ipynb) — Visium HD bin-to-cell segmentation (see cell-segmentation.md)
-2. [filter_blood_cells.ipynb](#2-filter_blood_cellsipynb) — spatial cropping, blood cell filtering, and zarr/GeoJSON export
-3. [combined_samples.ipynb](#3-combined_samplesipynb) — SpatialData construction, QC, normalization, batch correction, and clustering
+1. [bin2cell_AB01.ipynb / bin2cell_AB02.ipynb](#1-bin2cell_ab01ipynb--bin2cell_ab02ipynb) — Visium HD bin-to-cell segmentation
+2. [filter_blood_cells.ipynb](#2-filter_blood_cellsipynb) — cropped out blood cells spatially from visium HD outputs
+3. [combined_samples.ipynb](#3-combined_samplesipynb) — Concatenate both samples (AB01, AB02), QC, normalization, batch correction, and clustering
 4. [reclustering.ipynb](#4-reclusteringipynb) — cell type annotation, SEC cell identification, and subset reclustering
 5. [tissues_one_canvas.ipynb](#5-tissues_one_canvasipynb) — multi-tissue coordinate stitching onto a shared canvas
-6. [plot_with_grid.py](#6-plot_with_gridpy) — coordinate grid plotting utilities for spatial region identification
-7. [trajectory_analysis_original.ipynb](#7-trajectory_analysis_originalipynb) — exploratory pdgfra/tdtomato trajectory preprocessing
-8. [pdgfra_analysis.ipynb](#8-pdgfra_analysisipynb) — GPCCA and CFLARE trajectory analysis for pdgfra+ and tdtomato+ cells
-9. [tdtomato_analysis.ipynb](#9-tdtomato_analysisipynb) — tdTomato cell sub-annotation and moscot probability mass flow
-10. [analyze_trajectory.ipynb](#10-analyze_trajectoryipynb) — interactive trajectory analysis from GPCCA checkpoints
-11. [trajectory.py](#11-trajectorypy) — HPC full trajectory pipeline (pdgfra+ and tdtomato+)
-12. [trajectory_pdgfra_only.py](#12-trajectory_pdgfra_onlypy) — HPC trajectory pipeline (pdgfra+ only)
-13. [resume_lineage_drivers.py](#13-resume_lineage_driverspy) — resume lineage driver computation from checkpoint
-14. [run_trajectory.sh](#14-run_trajectorysh) — SLURM job submission script
+6. [plot_with_grid.py](#6-plot_with_gridpy) — coordinate grid plotting utilities for spatial region identification - this is just a utils script
+7. [trajectory_analysis_original.ipynb](#7-trajectory_analysis_originalipynb) — exploratory pdgfra/tdtomato trajectory preprocessing - this is not final, just drafting
+8. [pdgfra_analysis.ipynb](#8-pdgfra_analysisipynb) — Trajectory analysis for pdgfra+ cells
+9. [tdtomato_analysis.ipynb](#9-tdtomato_analysisipynb) — Trajectory analysis for tdTomato+ cell
+10. [trajectory.py](#11-trajectorypy) — HPC full trajectory pipeline (pdgfra+ and tdtomato+) - this is just exploratory script when I was playing with Cellrank
+11. [trajectory_pdgfra_only.py](#12-trajectory_pdgfra_onlypy) — HPC trajectory pipeline (pdgfra+ only) - just exploratory script
+12. [resume_lineage_drivers.py](#13-resume_lineage_driverspy) — resume lineage driver computation from checkpoint - just exploratory script
+13. [run_trajectory.sh](#14-run_trajectorysh) — SLURM job submission script - this is because I used to run these bigger scripts on Columbia's HPC
 
 ---
 
 ## 1. bin2cell_AB01.ipynb / bin2cell_AB02.ipynb
 
-> Visium HD bin-to-cell segmentation using StarDist and bin2cell. Full documentation for these notebooks is in `cell-segmentation.md`.
+> Visium HD bin-to-cell segmentation using bin2cell. 
 
-### files:
+## files:
+**Note:** change relative paths for these files.
+* **input files:**:
+	* AB01: 
+		* `/content/drive/MyDrive/mansfield-lab/visium/cell_segmentation/AB01/`
+			* `square_002um/`
+			* `AB01.tiff`
+	* AB02: 
+		* `/content/drive/MyDrive/mansfield-lab/visium/cell_segmentation/AB02/`
+			* source 2um binned data: `square_002um/`
+			* source H&E image: `AB02.tiff`
+* **output files:**
+	* AB01:
+		* `AB01_b2c.h5ad` - `/Users/rikac/mansfield_lab/spring_26/datasets/AB01_b2c.h5ad`
+		* Other outputs @ `/Users/rikac/mansfield_lab/spring_26/cell_segmentation/AB01/`
+			* `AB01_gex.npz`
+			* `AB01_gex.tiff`
+			* `AB01_he.npz`
+			* `AB01_he_scaled.tiff`
+	* AB02:
+		* `AB02_b2c.h5ad` - `/Users/rikac/mansfield_lab/spring_26/datasets/AB02_b2c.h5ad`
+		* Other outputs @ `/Users/rikac/mansfield_lab/spring_26/cell_segmentation/AB02/`
+			* `AB02_gex.npz`
+			* `AB02_gex.tiff`
+			* `AB02_he.npz`
+			* `AB02_he_scaled.tiff`
 
-- **notebooks:** `codes/bin2cell_AB01.ipynb`, `codes/bin2cell_AB02.ipynb`
-- see `cell-segmentation.md` for complete method write-up, parameters, and process description
+## parameters:
+
+| parameter | AB01 | AB02 |
+|---|---|---|
+| `mpp` (microns per pixel) | 0.5029 | 0.5027 |
+| `prob_thresh` H&E | 0.0003 | 0.0003 |
+| `prob_thresh` GEX | 0.05 | 0.05 |
+| `nms_thresh` H&E | 0.3 | 0.3 |
+| `nms_thresh` GEX | 0.5 | 0.5 |
+| `volume_ratio` | 4 | 4 |
+| `sigma` (GEX smoothing) | 5 | 5 |
+
+## results summary:
+
+| step                       | AB01                             | AB02                          |
+| -------------------------- | -------------------------------- | ----------------------------- |
+| input bins                 | 4,981,472                        | 3,753,489                     |
+| bins after filtering       | 2,525,920                        | 2,204,889                     |
+| H&E nuclei detected        | 111,592 objects → 1,040,976 bins | 67,859 objects → 755,311 bins |
+| bins after label expansion | 1,501,826                        | 1,053,358                     |
+| GEX cells detected         | 14,079 objects → 526,161 bins    | 19,501 objects → 572,930 bins |
+| secondary labels salvaged  | 243                              | 550                           |
+| final segmented bins       | 1,507,068                        | 1,066,941                     |
+| final cells                | 111,577                          | 68,183                        |
+| primary label source       | 111,334 (99.8%)                  | 67,633 (99.2%)                |
+| secondary label source     | 243 (0.2%)                       | 550 (0.8%)                    |
+
+
+## process:
+### 1. load Visium HD data
+1. data is loaded from the 2 µm bin output of Space Ranger using `b2c.read_visium()`
+2. gene names are made unique with `var_names_make_unique()`
+3. initial AnnData object contains bins x genes
+
+### 2. data cleaning
+1. filter genes expressed in fewer than 3 bins: `sc.pp.filter_genes(adata, min_cells=3)`
+2. filter bins with zero counts: `sc.pp.filter_cells(adata, min_counts=1)`
+
+### 3. prepare H&E image for segmentation
+1. the source H&E image is rescaled to a standard resolution using `b2c.scaled_he_image()`
+2. `mpp` (microns per pixel) is derived from the image metadata
+3. the function crops and scales the image, and stores new spatial coordinates under `spatial_cropped_150_buffer`
+
+### 4. save raw counts
+1. before any further processing, raw counts are saved as a layer: `adata.layers['raw_counts'] = adata.X.copy()`
+
+> [!note] destriping
+> `b2c.destripe()` was explored to correct the characteristic striped artifact in Visium HD 2 µm bins (caused by row/column width variability). it is currently ==not applied== to either sample — the step is commented out in both notebooks.
+
+### 5. H&E-based nuclei segmentation (primary)
+1. StarDist model `2D_versatile_he` is run on the scaled H&E image via `b2c.stardist()`
+2. parameters: `prob_thresh=0.0003` (lowered from default 0.692 to capture more nuclei), `nms_thresh=0.3`
+3. labels are loaded back into the AnnData with `b2c.insert_labels()`, stored as `labels_he`
+4. bins assigned to a nucleus receive a non-zero integer label; unassigned bins are 0
+
+### 6. expand nuclei to cell boundaries
+1. H&E StarDist identifies nuclei only, not full cells
+2. `b2c.expand_labels()` with `algorithm="volume_ratio"` and `volume_ratio=4` expands each nucleus label outward
+	1. `volume_ratio=4` is the default and represents the expected ratio of cell volume to nuclear volume
+	2. bins equidistant between two nuclei are resolved by comparing gene expression profiles in PCA space
+3. expanded labels stored as `labels_he_expanded`
+
+### 7. GEX-based cell segmentation (secondary)
+1. a pseudo-fluorescence image is created from `n_counts` per bin using `b2c.grid_image()` with `sigma=5` Gaussian smoothing
+2. StarDist model `2D_versatile_fluo` is run on this image via `b2c.stardist()`
+3. this model detects cells directly (not just nuclei), so no label expansion step is needed
+4. labels are loaded with `b2c.insert_labels()`, stored as `labels_gex`
+5. this step is used to capture cells in denser tissue regions where H&E segmentation may miss cells
+
+### 8. combine H&E and GEX labels
+1. `b2c.salvage_secondary_labels()` merges the two label sets
+	1. primary: `labels_he_expanded` (H&E-based)
+	2. secondary: `labels_gex` (GEX-based)
+2. GEX-based labels are only kept for regions not already covered by H&E labels
+3. combined labels stored as `labels_joint`; source tracked in `labels_joint_source` (`"primary"` or `"secondary"`)
+
+### 9. aggregate bins into cells
+1. `b2c.bin_to_cell()` groups all bins sharing the same `labels_joint` value
+2. the resulting AnnData (`cdata`) has one observation per cell rather than per bin
+3. spatial coordinates are aggregated for both `spatial` and `spatial_cropped_150_buffer` keys
+4. `cdata.obs` contains: `object_id`, `bin_count`, `array_row`, `array_col`, `labels_joint_source`
+
+### 10. save output
+1. raw counts are copied to `cdata.layers['raw_counts']` before saving
+2. `cdata.write_h5ad()` saves the final cell-level AnnData with `compression='gzip'`
+3. AB01 output: `AB01_b2c.h5ad`
+4. AB02 output: `AB02_b2c.h5ad`
+
+
 
 ---
 
 ## 2. filter_blood_cells.ipynb
 
-> filters bin2cell-segmented cells to tissue regions of interest by coordinate thresholds, removes blood cells, and exports filtered data as h5ad, 10x mtx, and GeoJSON polygon boundaries.
+> filters contaminated blood cells in the segmented cells spatially.
 
 ### files:
 
-- **notebook:** `codes/filter_blood_cells.ipynb`
 - **input files:**
   - `AB01_b2c.h5ad` — bin2cell output for slide AB01; set path via `AB01_PATH` in the notebook
   - `AB02_b2c.h5ad` — bin2cell output for slide AB02; set path via `AB02_PATH` in the notebook
@@ -93,11 +203,10 @@
 
 ## 3. combined_samples.ipynb
 
-> constructs SpatialData zarr objects for each sample, concatenates them, performs QC filtering, normalization, Harmony batch correction, Leiden clustering at multiple resolutions, and computes DEGs. runs on Google Colab.
+> This script combines both samples AB01 and AB02 and saved it to h5ad as the output file.It first constructs SpatialData objects for each sample, concatenates them, performs QC filtering, normalization, Harmony batch correction, Leiden clustering at multiple resolutions, and computes DEGs. runs on Google Colab.
 
 ### files:
 
-- **notebook:** `codes/combined_samples.ipynb`
 - **input files:**
   - `AB01_filtered.h5ad` and `AB02_filtered.h5ad` — filtered AnnData files from step 2; set paths via `AB01_PATH` and `AB02_PATH`
   - `AB01_boundaries.geojson` and `AB02_boundaries.geojson` — GeoJSON polygon boundaries; set paths via `AB01_GEO` and `AB02_GEO`
@@ -181,7 +290,7 @@
 
 ## 4. reclustering.ipynb
 
-> annotates cell types from Leiden clusters, identifies spatially enriched populations (SEC cells, fibroblast progenitors, tdTomato+), performs sub-clustering, and transfers labels back to the main AnnData.
+> This script takes the h5ad output from the `combined_samples.ipynb` and annotates cell types from Leiden clusters, identifies spatially enriched populations (SEC cells, fibroblast progenitors, tdTomato+), performs sub-clustering, and transfers labels back to the main AnnData.
 
 ### files:
 
@@ -243,11 +352,10 @@
 
 ## 5. tissues_one_canvas.ipynb
 
-> extracts centroid spatial coordinates and polygon geometry from concatenated SpatialData, crops five tissue regions from two slides by coordinate bounds, applies geometric transformations (reflection, rotation), and stitches all tissues onto a shared canvas.
+> This is for visual purposes, where the h5ad outputs for both samples are stitched into one canvas. The output is another h5ad file, where all the samples can be visualized in one canvas. It extracts centroid spatial coordinates and polygon geometry from concatenated SpatialData, crops five tissue regions from two slides by coordinate bounds, applies geometric transformations (reflection, rotation), and stitches all tissues onto a shared canvas.
 
 ### files:
 
-- **notebook:** `codes/tissues_one_canvas.ipynb`
 - **input files:**
   - `combined_samples_analyzed.h5ad` — annotated AnnData from step 4; set path via `ADATA_PATH`
   - `concatenated_sdata/` — zarr SpatialData object; set path via `SDATA_PATH`
@@ -297,11 +405,10 @@
 
 ## 6. plot_with_grid.py
 
-> two utility functions for visualizing spatial cell clusters with coordinate grid overlays, used to identify coordinate boundaries for tissue cropping.
+> This script is just a util script to helping with cropping the samples visually. 
 
 ### files:
 
-- **script:** `codes/plot_with_grid.py`
 - **input:** an AnnData with `obsm['spatial']` coordinates and a SpatialData object with cell boundaries
 
 ### process:
@@ -323,7 +430,7 @@
 
 ## 7. trajectory_analysis_original.ipynb
 
-> exploratory notebook for pdgfra+ and tdTomato+ trajectory analysis: loads annotated data, subsets mesenchymal populations, recalculates embeddings, and applies sub-clustering with DEGs before running trajectory methods.
+> This is just an exploratory notebook for pdgfra+ and tdTomato+ trajectory analysis: loads annotated data, subsets mesenchymal populations, recalculates embeddings, and applies sub-clustering with DEGs before running trajectory methods.
 
 ### files:
 
@@ -363,11 +470,10 @@
 
 ## 8. pdgfra_analysis.ipynb
 
-> GPCCA and CFLARE fate analysis for pdgfra+ and tdtomato+ cells using CellRank and moscot, loading from checkpoint h5ad files and computing terminal state probabilities and lineage drivers.
+> This script is for trajectory analysis fo pdgfra+ cells using Cellrank and Moscot. 
 
 ### files:
 
-- **notebook:** `codes/pdgfra_analysis.ipynb`
 - **input files:**
   - `pdgfra_gpcca.h5ad` — checkpoint h5ad with stored transition matrix for pdgfra+ cells; set path via `PDGFRA_ADATA_PATH`
   - `tdtom_gpcca.h5ad` — checkpoint h5ad for tdTomato+ cells; set path via `TDTOM_ADATA_PATH`
@@ -415,11 +521,10 @@
 
 ## 9. tdtomato_analysis.ipynb
 
-> sub-annotates tdTomato+ cells into fine-grained cell types, reclusters mesenchymal and myotome/FP sub-populations, runs moscot optimal transport for developmental flow analysis, and saves the final labeled AnnData.
+> This is for analyzing trajectory of tdtomato+ cells. This script also contains reclustering of myotome/FP sub-populations, runs moscot optimal transport for developmental flow analysis, and saves the final labeled AnnData.
 
 ### files:
 
-- **notebook:** `codes/tdtomato_analysis.ipynb`
 - **input files:**
   - `tdtomato_labeled.h5ad` — labeled AnnData for tdTomato+ cells (35,522 cells); set path via `TDTOM_PATH`
 - **output files:**
@@ -463,53 +568,12 @@
 
 ---
 
-## 10. analyze_trajectory.ipynb
+## 10. trajectory.py
 
-> interactive notebook for loading pdgfra+ and tdtomato+ GPCCA checkpoint h5ads, rebuilding kernels and estimators, computing CFLARE and GPCCA analyses, and visualizing fate probabilities and lineage drivers.
-
-### files:
-
-- **notebook:** `codes/analyze_trajectory.ipynb`
-- **input files:**
-  - `pdgfra_gpcca.h5ad` — pdgfra+ checkpoint; set path via `PDGFRA_PATH`
-  - `tdtom_gpcca.h5ad` — tdtomato+ checkpoint; set path via `TDTOM_PATH`
-- **output files:**
-  - lineage driver CSV files; set paths via `LINEAGE_DRIVER_OUT` in the notebook
-
-### process:
-
-#### 1. load checkpoints and rebuild kernels
-
-1. read each checkpoint h5ad
-2. rebuild `RealTimeKernel` from stored `T_fwd` matrix: `RealTimeKernel.from_adata(adata, key="T_fwd")`
-
-#### 2. CFLARE analysis
-
-1. initialize `cr.estimators.CFLARE(kernel)` for each cell population
-2. fit and predict terminal states using kmeans
-3. compute and visualize fate probabilities
-
-#### 3. GPCCA analysis
-
-1. initialize `cr.estimators.GPCCA(kernel)` for each cell population
-2. compute Schur decomposition and macrostates
-3. predict terminal states and compute fate probabilities
-4. visualize macrostate composition and fate probability distributions
-
-#### 4. lineage driver identification
-
-1. call `g.compute_lineage_drivers()` for selected terminal lineages
-2. export top driver genes as CSV
-
----
-
-## 11. trajectory.py
-
-> HPC script that runs the full trajectory analysis pipeline for both pdgfra+ and tdtomato+ cell populations, including moscot optimal transport, RealTimeKernel construction, GPCCA macrostate analysis, and fate probability computation. designed for GPU execution on the insomnia001 cluster.
+> HPC script that runs the full Cellrank analysis pipeline for both pdgfra+ and tdtomato+ cell populations, including moscot optimal transport, RealTimeKernel construction, GPCCA macrostate analysis, and fate probability computation. This is not used anymore since Cellrank was determined not useful for trajectory analysis.
 
 ### files:
 
-- **script:** `codes/trajectory.py`
 - **input files:**
   - labeled AnnData file for pdgfra+ and tdtomato+ cells; set `DATA_PATH` at the top of the script to the HPC data directory
 - **output files:**
@@ -553,7 +617,7 @@
 
 ## 12. trajectory_pdgfra_only.py
 
-> same pipeline as `trajectory.py` but runs only the pdgfra+ cell population. use when re-running or debugging pdgfra+ analysis independently of tdtomato+.
+> same pipeline as `trajectory.py` but runs only the pdgfra+ cell population. use when re-running or debugging pdgfra+ analysis independently of tdtomato+. This is not used anymore.
 
 ### files:
 
@@ -569,7 +633,7 @@ follows the same steps as `trajectory.py` (see above), executing only the pdgfra
 
 ## 13. resume_lineage_drivers.py
 
-> resumes lineage driver computation from a saved GPCCA checkpoint, reattaching stored fate probabilities and computing lineage driver genes for a selected terminal lineage.
+> resumes lineage driver computation from a saved GPCCA checkpoint, reattaching stored fate probabilities and computing lineage driver genes for a selected terminal lineage. This is not used anymore.
 
 ### files:
 
@@ -604,7 +668,7 @@ follows the same steps as `trajectory.py` (see above), executing only the pdgfra
 
 ## 14. run_trajectory.sh
 
-> SLURM job submission script for running `trajectory.py` on the insomnia001 HPC cluster.
+> SLURM job submission script for running `trajectory.py` on the insomnia001 HPC cluster. Just a util script.
 
 ### files:
 
